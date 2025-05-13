@@ -1,118 +1,152 @@
-# Design-Patterns-for-IoT-Embedded-Systems
+<h1 align="center"> Clean Code - Design Patterns </h1>
 
-## Project Overview
-This project implements a platform based on Design Patterns for IoT systems. The platform integrates devices (such as Raspberry Pi and ESP8266) to read temperature data and display it using Streamlit, providing real-time data visualization and interaction. The code structure utilizes Factory Method, Builder, and Observer patterns to create, manage, and monitor IoT devices efficiently.
+<p align="center">
+   <a href="#-tecnologias">Visão Geral</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">Funcionalidades</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-tecnologias">Problemas Detectados</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">Refatoração</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">Estrutura</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">Instalação</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">Testes</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">Interface</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+   <a href="#-projeto">CHANGELOG</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</p>
 
-## Features
-- **Device Creation**: Devices are instantiated using Factory and Builder patterns.
-- **Real-Time Data Visualization**: The platform reads temperature data from an ESP8266 via serial communication and displays it in real-time.
-- **Dynamic UI with Streamlit**: A user-friendly interface with features for managing device associations and notifications.
-- **Custom Styling**: Integrated support for loading custom CSS for UI enhancements.
+## 📌 Visão Geral do Projeto
+Este projeto demonstra a aplicação de padrões de projeto (Design Patterns) em sistemas embarcados de IoT. Utilizando dispositivos como Raspberry Pi e ESP8266, a plataforma realiza a leitura de temperatura via comunicação serial e exibe os dados em tempo real por meio de uma interface desenvolvida em Streamlit.
 
-## Project Structure
-```
+O código foi estruturado com foco em reutilização, escalabilidade e legibilidade, fazendo uso de padrões como Factory Method, Builder e Observer.
+
+
+## 🧠 Funcionalidades Principais
+
+✅ Criação de dispositivos IoT via Factory e Builder Patterns;
+
+✅ Leitura de dados em tempo real via serial (ESP8266);
+
+✅ Interface interativa com Streamlit;
+
+✅ Sistema Observer para notificação de mudanças;
+
+✅ Estilização customizada com CSS.
+
+
+## 🛠️ Problemas Detectados (Pré-refatoração)
+
+Código altamente acoplado entre camadas de leitura, interface e lógica de negócios;
+
+Nomes de variáveis e funções pouco descritivos;
+
+Falta de testes automatizados;
+
+Ausência de linter e formatação inconsistente;
+
+Presença de code smells como variáveis globais desnecessárias e responsabilidades duplicadas;
+
+Uso ineficiente de session_state no Streamlit.
+
+
+## 🔧 Estratégia de Refatoração
+
+Modularização do projeto com separação de responsabilidades;
+
+Padronização de nomes e estrutura de arquivos;
+
+Redesenho parcial de componentes com base em Clean Code;
+
+Aplicação de Interface Fluente para configuração de dispositivos;
+
+Implementação de suíte de testes com cobertura parcial (~50%);
+
+Integração de linter com flake8 e black;
+
+Criação de documentação e ChangeLog organizados.
+
+## 📁 Estrutura do Projeto
+
 project-root/
-|-- src/
-|   |-- main.py
-|   |-- observer.py
-|   |-- devices.py
-|   |-- factories.py
-|   |-- builders.py
-|-- app/
-|   |-- broker.py
-|-- data/
-|   |-- Ambiente_Controlado.xlsx
-|-- styles/
-|   |-- styles.css
-|-- assets/
-|   |-- image.png
-|-- README.md
-```
+├── src/
+│   ├── main.py
+│   ├── observer.py
+│   ├── devices.py
+│   ├── factories.py
+│   ├── builders.py
+├── app/
+│   └── broker.py
+├── data/
+│   └── Ambiente_Controlado.xlsx
+├── styles/
+│   └── styles.css
+├── tests/
+│   ├── test_devices.py
+│   └── test_factories.py
+├── assets/
+│   └── image.png
+├── README.md
+├── CHANGELOG.md
+└── .flake8
 
-## How to Run the Project
-1. **Clone the repository** and navigate to the project directory.
-2. **Install the required packages**:
-   ```bash
-   pip install streamlit
-   ```
-3. **Run the application**:
-   ```bash
-   streamlit run app/broker.py
-   ```
-4. **View the application** in your browser at `http://localhost:8501`.
+## 🚀 Instalação e Execução
 
-## Main Components
+1.Clone o repositório:
 
-### 1. `main.py`
-Responsible for the core backend logic, including:
-- Reading data from the Excel file.
-- Creating devices based on the read data.
-- Handling serial communication for reading temperature data from an ESP8266.
+git clone https://github.com/RenatoRibas/Design-Patterns-for-IoT-Embedded-Systems.git
+cd Design-Patterns-for-IoT-Embedded-Systems
 
-### 2. `broker.py`
-Implements the Streamlit interface:
-- Displays the main UI for managing and viewing device associations.
-- Allows users to create new associations and view notifications from observers.
-- Ensures the real-time update of data and handles background tasks with threads.
+2.Instale as dependências:
+pip install -r requirements.txt
 
-## Key Code Sections
-### Initializing Devices and Threads
-```python
-if 'dispositivos_criados' not in st.session_state:
-    dispositivos_criados = processar_e_criar_dispositivos()
-    st.session_state['dispositivos_criados'] = dispositivos_criados
-else:
-    dispositivos_criados = st.session_state['dispositivos_criados']
+3.Execute a aplicação:
+streamlit run app/broker.py
 
-if 'sensor_thread' not in st.session_state:
-    stop_event = Event()
-    sensor_thread = Thread(target=ler_sensor, args=(dispositivos_criados, stop_event), daemon=True)
-    sensor_thread.start()
-    st.session_state['sensor_thread'] = sensor_thread
-    st.session_state['stop_event'] = stop_event
-```
+4.Acesse no navegador: http://localhost:8501
 
-### Creating New Associations
-```python
-def adicionar_associacao():
-    dispositivo_tag = dispositivo_selecionado
-    subscriber_name_input = subscriber_name.strip()
+## 🧪 Testes Automatizados
 
-    if not subscriber_name_input:
-        st.warning("Por favor, insira o nome do objeto associado.")
-        return
+Implementado com pytest.
 
-    dispositivo = next((d for d in dispositivos_criados if d.tag == dispositivo_tag), None)
+Localizados em tests/, com cobertura parcial (~50%).
 
-    if dispositivo and isinstance(dispositivo, AIDevicePublisher):
-        observer = GenericSubscriber(subscriber_name_input)
-        dispositivo.attach(observer)
-        associacoes.append({
-            'dispositivo': dispositivo_tag,
-            'subscriber': subscriber_name_input,
-            'observer': observer
-        })
-        st.session_state['associacoes'] = associacoes.copy()
-        st.success(f"Associação criada entre {dispositivo_tag} e {subscriber_name_input}")
-    else:
-        st.error("Dispositivo não encontrado ou inválido.")
-```
+Para rodar os testes:
+pytest tests/
 
-## Custom Styling
-To enhance the UI, the project includes a custom CSS file:
-- **Path**: `styles/styles.css`
-- **Usage**: The CSS is loaded into Streamlit using:
-  ```python
-  def load_css():
-      css_path = os.path.join(styles_dir, 'styles.css')
-      with open(css_path, 'r', encoding='utf-8') as f:
-          st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-  ```
+## 🧼 Linter e Formatação
 
-## License
-This project is licensed under the MIT License.
+Ferramentas: flake8, black
 
-## Author
-**Renato Ribas**  
-Date: 01/11/2024
+Para rodar manualmente:
+flake8 src/
+black src/
+
+## 🧩 Interface Fluente
+
+Foi aplicada uma interface fluente no padrão Builder para construção dos dispositivos, permitindo chamadas encadeadas como:
+device = (
+    DeviceBuilder()
+    .with_tag("Sensor01")
+    .with_type("Temperature")
+    .with_location("Sala 1")
+    .build()
+)
+
+## 🔄 CHANGELOG
+
+O histórico de mudanças encontra-se no arquivo CHANGELOG.md, com as versões documentadas da seguinte forma:
+## [1.1.0] - 2025-05-13
+### Adicionado
+- Suíte de testes com cobertura parcial
+- Interface fluente no DeviceBuilder
+- Aplicação de linter com Flake8 e Black
+
+### Modificado
+- Modularização da lógica principal
+- Padronização de nomes e estrutura
+
+### Removido
+- Código duplicado e variáveis globais desnecessárias
+
+### 👤 Autores
+Renato Ribas
+Jhayne Henemam
+📅 Data da última refatoração: 13/05/2025
 
