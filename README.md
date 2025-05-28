@@ -110,6 +110,15 @@ Localizados em tests/, com cobertura parcial (~50%).
 Para rodar os testes:
 pytest tests/
 
+pytest
+
+pytest -m unit  # Executa apenas testes unitários
+pytest -m integration  # Executa apenas testes de integração
+pytest -m functional  # Executa apenas testes funcionais
+pytest -m performance  # Executa apenas testes de desempenho
+
+pytest --cov=src
+
 ## 🧼 Linter e Formatação
 
 Ferramentas: flake8, black
